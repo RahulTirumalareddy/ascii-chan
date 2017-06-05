@@ -4,7 +4,7 @@ from datetime import datetime
 import os,sys
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:hello@localhost/ascii_db"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db=SQLAlchemy(app)
 
 class Drawing(db.Model):
