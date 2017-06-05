@@ -12,14 +12,29 @@
     </title>
   </head>
   <body>
-    <label> Title: <form method='POST'> <input name='title'> <input type='submit'> </form> </label>
-    <label> ASCII Art: <form method='POST'> <textarea name='drawing'> </textarea> <input type='submit'> </form> </label>
+    <form method='POST'>
+      <label> Title:
+        <input name='title'>
+      </label>
+
+      <label> ASCII Art:
+        <textarea name='drawing'> </textarea>
+      </label>
+      <input type='submit'>
+    </form>
 
     <hr>
 
     {% for drawing in drawings %}
-    <div style="text-align:center">{{drawing.title}}</div>
-    <div>{{drawing.drawing}}</div>
+    <div style="text-align:center">
+      {{drawing.title}}
+      <form method='POST'>
+        <input type="hidden" name='deleted' value={{drawing.id}}>
+        <button type='submit'> Delete? </button>
+      </form>
+    </div>
+    <br>
+    <div> <pre>{{drawing.drawing}}</pre> </div>
     <hr>
     {% endfor %}
   </body>
