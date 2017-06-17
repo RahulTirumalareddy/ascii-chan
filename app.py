@@ -7,7 +7,6 @@ import os, sys, urllib
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db=SQLAlchemy(app)
-api_key='AIzaSyCic4Gp4eox33x5zUB5wMJEOdCr3632PVE'
 link='https://maps.googleapis.com/maps/api/staticmap?markers={}&size=400x400&key=AIzaSyCic4Gp4eox33x5zUB5wMJEOdCr3632PVE'
 
 
@@ -44,7 +43,7 @@ def home():
             db.session.delete(Drawing.query.filter_by(id=deleted).first())
         db.session.commit()
     markers=''
-    drawings=Drawing.query.limit(10).all().order_by(Drawing.date.desc())
+    drawings=Drawing.query.limit(10).order_by(Drawing.date.desc()).all()
 
     for drawing in drawings:
         if markers:
