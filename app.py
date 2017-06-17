@@ -6,7 +6,6 @@ import os, sys, urllib.request
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-#app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:hello@localhost/users"
 db=SQLAlchemy(app)
 link='https://maps.googleapis.com/maps/api/staticmap?markers={}&size=460x460&key=AIzaSyCic4Gp4eox33x5zUB5wMJEOdCr3632PVE'
 
@@ -35,7 +34,6 @@ def home():
         drawing=request.form.get('drawing')
         deleted=request.form.get('deleted')
         if title and drawing:
-            print("IP ADDRESS:",request.headers['X-Forwarded-For'])
             xml_file=urllib.request.urlopen("http://ip-api.com/xml/{}".format(request.headers['X-Forwarded-For']))
             root=ET.parse(xml_file).getroot()
             coordinates = root[7].text + ',' + root[8].text
@@ -50,8 +48,8 @@ def home():
     for drawing in drawings:
         coordinates=drawing.coordinates
         if coordinates:
-            if markers:
-                markers+=drawing.coordinates
+            if not markers:
+                markers=drawing.coordinates
             else:
                 markers+='|'+coordinates
 
