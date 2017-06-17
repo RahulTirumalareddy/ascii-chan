@@ -1,41 +1,51 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
-    <link rel="manifest" href="/static/manifest.json">
-    <link rel="mask-icon" href="/static/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="theme-color" content="#ffffff">
-    <title>
-      ASCII-chan~
-    </title>
-  </head>
-  <body>
-    <form method='POST'>
-      <label> Title:
+
+<head>
+  <style>
+  #image {
+    float: right;
+  }
+  </style>
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="mask-icon" href="/static/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+    ASCII-chan~
+  </title>
+</head>
+
+<body>
+  <div id='image'>
+    <img src={{map}} alt="Map">
+  </div>
+  <form method='POST'>
+    <label> Title:
         <input name='title'>
       </label>
 
-      <label> ASCII Art:
+    <label> ASCII Art:
         <textarea name='drawing'> </textarea>
       </label>
-      <input type='submit'>
+    <input type='submit'>
+  </form>
+
+  <hr> {% for drawing in drawings %}
+  <div style="text-align:center">
+    {{drawing.title}}
+    <form method='POST'>
+      <input type="hidden" name='deleted' value={{drawing.id}}>
+      <button type='submit'> Delete? </button>
     </form>
+  </div>
 
-    <hr>
+  <br>
 
-    {% for drawing in drawings %}
-    <div style="text-align:center">
-      {{drawing.title}}
-      <form method='POST'>
-        <input type="hidden" name='deleted' value={{drawing.id}}>
-        <button type='submit'> Delete? </button>
-      </form>
-    </div>
-    <br>
-    <div> <pre>{{drawing.drawing}}</pre> </div>
-    <hr>
-    {% endfor %}
-  </body>
+  <div> <pre>{{drawing.drawing}}</pre> </div>
+  <hr> {% endfor %}
+</body>
+
 </html>
