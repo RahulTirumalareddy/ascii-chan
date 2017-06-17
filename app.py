@@ -49,7 +49,9 @@ def home():
         if markers:
             markers+=drawing.coordinates
         else:
-            markers+='|'+drawing.coordinates
+            coordinates=drawing.coordinates
+            if coordinates:
+                markers+='|'+coordinates
 
     return render_template('doc.html',drawings=drawings, map=link.format(markers))
 
