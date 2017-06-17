@@ -2,9 +2,16 @@
 <html>
 
 <head>
+  <link href="https://fonts.googleapis.com/css?family=Spectral" rel="stylesheet">
   <style>
   #image {
     float: right;
+  }
+  body {
+    font-family: 'Spectral', serif;
+  }
+  label textarea{
+    vertical-align: top;
   }
   </style>
   <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
@@ -28,7 +35,7 @@
       </label>
 
     <label> ASCII Art:
-        <textarea name='drawing'> </textarea>
+        <textarea name='drawing' rows='30' cols='75'> </textarea>
       </label>
     <input type='submit'>
   </form>

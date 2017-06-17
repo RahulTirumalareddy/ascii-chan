@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 #app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:hello@localhost/users"
 db=SQLAlchemy(app)
-link='https://maps.googleapis.com/maps/api/staticmap?markers={}&size=400x400&key=AIzaSyCic4Gp4eox33x5zUB5wMJEOdCr3632PVE'
+link='https://maps.googleapis.com/maps/api/staticmap?markers={}&size=460x460&key=AIzaSyCic4Gp4eox33x5zUB5wMJEOdCr3632PVE'
 
 
 class Drawing(db.Model):
