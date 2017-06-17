@@ -43,7 +43,7 @@ def home():
             db.session.delete(Drawing.query.filter_by(id=deleted).first())
         db.session.commit()
     markers=''
-    drawings=Drawing.query.limit(10).order_by(Drawing.date.desc()).all()
+    drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
 
     for drawing in drawings:
         if markers:
