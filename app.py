@@ -48,11 +48,11 @@ def home():
     drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
 
     for drawing in drawings:
-        if markers:
-            markers+=drawing.coordinates
-        else:
-            coordinates=drawing.coordinates
-            if coordinates:
+        coordinates=drawing.coordinates
+        if coordinates:
+            if markers:
+                markers+=drawing.coordinates
+            else:
                 markers+='|'+coordinates
 
     return render_template('doc.html',drawings=drawings, map=link.format(markers))
