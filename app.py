@@ -34,7 +34,7 @@ def home():
         drawing=request.form.get('drawing')
         deleted=request.form.get('deleted')
         if title and drawing:
-            xml_file=urllib.request.open("http://ip-api.com/xml/{}".format(request.environ['REMOTE_ADDR']))
+            xml_file=urllib.request.urlopen("http://ip-api.com/xml/{}".format(request.environ['REMOTE_ADDR']))
             root=ET.parse(xml_file).getroot()
             coordinates = root[7].text + ',' + root[8].text
             element= Drawing(title, drawing, coordinates)
