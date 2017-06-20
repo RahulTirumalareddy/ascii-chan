@@ -42,8 +42,6 @@ def home():
             coordinates = root[7].text + ',' + root[8].text
             element= Drawing(title, drawing, coordinates)
             db.session.add(element)
-            print('REDIS HIT, Exists in cache?', drawings!=None)
-
             r.lpush('drawings',json.dumps(element.__dict__))
             if llen('drawings')>10:
                 r.rpop('drawings')
@@ -63,15 +61,15 @@ def home():
 
     markers=''
 
-    drawings_jsons=r.get('drawings')
+    drawings_jsons=r.lrange('drawings',0,-1)
 
-    print('REDIS HIT, Exists in cache?', drawings!=None)
+    print('REDIS HIT, Exists in cache?', drawings_jsons!=None)
     if not drawings_jsons:
         drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
         print('CACHE DOES NOT EXIST, DB HIT')
         r.lpush('drawings',*[json.dumps(d.__dict__) for d in drawings])
 
-    drawings_json=r.get('drawings')
+    drawings_json=r.lrange('drawings',0,-1)
 
     drawings = [json.loads(drawing_json, object_hook=lambda d: SimpleNamespace(**d)) for drawing_json in drawings_jsons]
     for drawing in drawings:
