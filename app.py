@@ -28,10 +28,10 @@ class Drawing(db.Model):
         return '<ID %s>' % self.id
     def as_dict(self):
         return {
-            'id': self.id
-            'title': self.title
-            'drawing': self.drawing
-            'date': self.drawing
+            'id': self.id,
+            'title': self.title,
+            'drawing': self.drawing,
+            'date': self.drawing,
             'coordinates': self.coordinates
         }
 
