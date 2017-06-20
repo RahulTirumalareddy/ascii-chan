@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from types import SimpleNamespace
+from collections import namedtuple
 import xml.etree.ElementTree as ET
 import os, sys, urllib.request, redis, json
 
@@ -26,6 +26,14 @@ class Drawing(db.Model):
         self.coordinates=coordinates
     def __repr__(self):
         return '<ID %s>' % self.id
+    def as_dict(self):
+        return {
+            'id': self.id
+            'title': self.title
+            'drawing': self.drawing
+            'date': self.drawing
+            'coordinates': self.coordinates
+        }
 
 db.create_all()
 db.session.commit()
@@ -42,7 +50,7 @@ def home():
             coordinates = root[7].text + ',' + root[8].text
             element= Drawing(title, drawing, coordinates)
             db.session.add(element)
-            r.lpush('drawings',json.dumps(element.__dict__))
+            r.lpush('drawings',json.dumps(element.as_dict()))
             if llen('drawings')>10:
                 r.rpop('drawings')
 
@@ -50,7 +58,7 @@ def home():
             db.session.delete(Drawing.query.filter_by(id=deleted).first())
             drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
             print("DEL OPERATION, DB HIT")
-            jsons=[json.dumps(d.__dict__) for d in drawings]
+            jsons=[json.dumps(d.as_dict()) for d in drawings]
             r.delete('drawings')
             r.lpush('drawings',*jsons)
 
@@ -67,11 +75,10 @@ def home():
     if not drawings_jsons:
         drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
         print('CACHE DOES NOT EXIST, DB HIT')
-        r.lpush('drawings',*[json.dumps(d.__dict__) for d in drawings])
+        r.lpush('drawings',*[json.dumps(d.as_dict()) for d in drawings])
 
     drawings_json=r.lrange('drawings',0,-1)
-
-    drawings = [json.loads(drawing_json, object_hook=lambda d: SimpleNamespace(**d)) for drawing_json in drawings_jsons]
+    drawings = [json.loads(data, object_hook=lambda d: namedtuple('X', d.keys())(*d.values())) for drawing_json in drawings_jsons]
     for drawing in drawings:
         coordinates=drawing.coordinates
         if coordinates:
