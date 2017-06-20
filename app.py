@@ -73,7 +73,7 @@ def home():
 
     drawings_json=r.get('drawings')
 
-    drawings = [json.loads(drawing_json, object_hook=lambda d: SimpleNamespace(**d) for drawing_json in drawings_jsons]
+    drawings = [json.loads(drawing_json, object_hook=lambda d: SimpleNamespace(**d)) for drawing_json in drawings_jsons]
     for drawing in drawings:
         coordinates=drawing.coordinates
         if coordinates:
