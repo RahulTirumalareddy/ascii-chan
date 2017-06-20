@@ -66,7 +66,6 @@ def home():
         db.session.commit()
         return redirect(url_for('/'))
 
-
     markers=''
 
     drawings_jsons=r.lrange('drawings',0,-1)
@@ -74,10 +73,12 @@ def home():
     print('REDIS HIT, Exists in cache?', not drawings_jsons)
     if not drawings_jsons:
         drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
-        print('CACHE DOES NOT EXIST, DB HIT')
+        print("SIZE OF DRAWINGS:", len(drawings))
+        print('DB HIT')
         r.lpush('drawings',*[json.dumps(d.as_dict()) for d in drawings])
 
     drawings_json=r.lrange('drawings',0,-1)
+    print("SIZE OF DRAWINGS_JSON:", len(drawings_json))
 
     drawings = [json2drawing(drawing_json) for drawing_json in drawings_jsons]
     for drawing in drawings:
