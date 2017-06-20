@@ -64,7 +64,7 @@ def home():
     if not drawings:
         drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
         print('DB HIT')
-        r.set('drawing',drawings)
+        r.set('drawings',drawings)
 
     for drawing in drawings:
         coordinates=drawing.coordinates
