@@ -2,11 +2,12 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import xml.etree.ElementTree as ET
-import os, sys, urllib.request
+import os, sys, urllib.request, redis
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db=SQLAlchemy(app)
+r=redis.from_url(os.environ['REDIS_URL'])
 link='https://maps.googleapis.com/maps/api/staticmap?markers={}&size=460x460&key=AIzaSyCic4Gp4eox33x5zUB5wMJEOdCr3632PVE'
 
 
@@ -39,11 +40,31 @@ def home():
             coordinates = root[7].text + ',' + root[8].text
             element= Drawing(title, drawing, coordinates)
             db.session.add(element)
+            cache=r.get('drawings')
+            print('REDIS HIT, Exists in cache?', drawings!=None)
+            if cache:
+                cache.insert(0,element)
+                if len(cache)>10:
+                    cache.pop()
+            else:
+                cache=[element]
+
+            r.set('drawings',cache)
+
         if deleted:
             db.session.delete(Drawing.query.filter_by(id=deleted).first())
         db.session.commit()
+        return redirect(url_for('/'))
+
+
     markers=''
-    drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
+
+    drawings=r.get('drawings')
+    print('REDIS HIT, Exists in cache?', drawings!=None)
+    if not drawings:
+        drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
+        print('DB HIT')
+        r.set('drawing',drawings)
 
     for drawing in drawings:
         coordinates=drawing.coordinates
