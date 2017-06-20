@@ -67,6 +67,7 @@ def home():
         r.set('drawings',drawings)
 
     for drawing in drawings:
+        print("DRAWING:",drawing)
         coordinates=drawing.coordinates
         if coordinates:
             if not markers:
