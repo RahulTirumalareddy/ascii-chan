@@ -51,7 +51,7 @@ def home():
             element= Drawing(title, drawing, coordinates)
             db.session.add(element)
             r.lpush('drawings',json.dumps(element.as_dict()))
-            if llen('drawings')>10:
+            if r.llen('drawings')>10:
                 r.rpop('drawings')
 
         if deleted:
@@ -71,14 +71,15 @@ def home():
 
     drawings_jsons=r.lrange('drawings',0,-1)
 
-    print('REDIS HIT, Exists in cache?', drawings_jsons!=None)
+    print('REDIS HIT, Exists in cache?', not drawings_jsons)
     if not drawings_jsons:
         drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
         print('CACHE DOES NOT EXIST, DB HIT')
         r.lpush('drawings',*[json.dumps(d.as_dict()) for d in drawings])
 
     drawings_json=r.lrange('drawings',0,-1)
-    drawings = [json.loads(data, object_hook=lambda d: namedtuple('X', d.keys())(*d.values())) for drawing_json in drawings_jsons]
+
+    drawings = [json2drawing(drawing_json) for drawing_json in drawings_jsons]
     for drawing in drawings:
         coordinates=drawing.coordinates
         if coordinates:
@@ -88,6 +89,10 @@ def home():
                 markers+='|'+coordinates
 
     return render_template('doc.html',drawings=drawings, map=link.format(markers))
+
+def json2drawing(s):
+    d=json.load(s)
+    return Drawing(d['title'], d['drawing'], d['date'], d['coordinates'])
 
 if __name__ == '__main__':
 	port = int(os.environ.get('PORT', 5000))
