@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from types import SimpleNamespace
 import xml.etree.ElementTree as ET
-import os, sys, urllib.request, redis
+import os, sys, urllib.request, redis, json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
@@ -41,34 +42,39 @@ def home():
             coordinates = root[7].text + ',' + root[8].text
             element= Drawing(title, drawing, coordinates)
             db.session.add(element)
-            cache=r.get('drawings')
             print('REDIS HIT, Exists in cache?', drawings!=None)
-            if cache:
-                cache.insert(0,element)
-                if len(cache)>10:
-                    cache.pop()
-            else:
-                cache=[element]
 
-            #r.set('drawings',cache)
+            r.lpush('drawings',json.dumps(element.__dict__))
+            if llen('drawings')>10:
+                r.rpop('drawings')
 
         if deleted:
             db.session.delete(Drawing.query.filter_by(id=deleted).first())
+            drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
+            print("DEL OPERATION, DB HIT")
+            jsons=[json.dumps(d.__dict__) for d in drawings]
+            r.delete('drawings')
+            r.lpush('drawings',*jsons)
+
+
         db.session.commit()
         return redirect(url_for('/'))
 
 
     markers=''
 
-    drawings=r.get('drawings')
-    print('REDIS HIT, Exists in cache?', drawings!=None)
-    if not drawings:
-        drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
-        print('DB HIT')
-        #r.set('drawings',drawings)
+    drawings_jsons=r.get('drawings')
 
+    print('REDIS HIT, Exists in cache?', drawings!=None)
+    if not drawings_jsons:
+        drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
+        print('CACHE DOES NOT EXIST, DB HIT')
+        r.lpush('drawings',*[json.dumps(d.__dict__) for d in drawings])
+
+    drawings_json=r.get('drawings')
+
+    drawings = [json.loads(drawing_json, object_hook=lambda d: SimpleNamespace(**d) for drawing_json in drawings_jsons]
     for drawing in drawings:
-        print("DRAWING:",drawing)
         coordinates=drawing.coordinates
         if coordinates:
             if not markers:
