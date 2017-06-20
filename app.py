@@ -50,7 +50,7 @@ def home():
             else:
                 cache=[element]
 
-            r.set('drawings',cache)
+            #r.set('drawings',cache)
 
         if deleted:
             db.session.delete(Drawing.query.filter_by(id=deleted).first())
@@ -65,7 +65,7 @@ def home():
     if not drawings:
         drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
         print('DB HIT')
-        r.set('drawings',drawings)
+        #r.set('drawings',drawings)
 
     for drawing in drawings:
         print("DRAWING:",drawing)
