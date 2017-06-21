@@ -87,7 +87,7 @@ def home():
             else:
                 markers+='|'+coordinates
 
-    return render_template('doc.html',drawings=drawings, map=link.format(markers), time=r.time()[0]-r.get('updated'))
+    return render_template('doc.html',drawings=drawings, map=link.format(markers), time=r.time()[0]-int(r.get('updated')))
 
 def json2drawing(s):
     d=json.loads(s)
