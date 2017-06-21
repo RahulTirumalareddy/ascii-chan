@@ -95,7 +95,7 @@ def home():
     return render_template('doc.html',drawings=drawings, map=link.format(markers))
 
 def json2drawing(s):
-    d=json.load(s)
+    d=json.loads(s)
     return Drawing(d['title'], d['drawing'], d['date'], d['coordinates'])
 
 if __name__ == '__main__':
