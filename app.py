@@ -64,7 +64,7 @@ def home():
 
 
         db.session.commit()
-        return redirect(url_for('/'))
+        return redirect('/')
 
     markers=''
 
