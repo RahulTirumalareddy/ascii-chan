@@ -43,13 +43,14 @@ def home():
         title=request.form.get('title')
         drawing=request.form.get('drawing')
         deleted=request.form.get('deleted')
+
         if title and drawing:
             xml_file=urllib.request.urlopen("http://ip-api.com/xml/{}".format(request.headers['X-Forwarded-For']))
             root=ET.parse(xml_file).getroot()
             coordinates = root[7].text + ',' + root[8].text
             element= Drawing(title, drawing, coordinates)
             db.session.add(element)
-            db.session.refresh(element)
+            db.session.commit()
             r.lpush('drawings',json.dumps(element.as_dict()))
             if r.llen('drawings')>10:
                 r.rpop('drawings')
@@ -61,9 +62,8 @@ def home():
             jsons=[json.dumps(d.as_dict()) for d in drawings]
             r.delete('drawings')
             r.rpush('drawings',*jsons)
+            db.session.commit()
 
-
-        db.session.commit()
         return redirect('/')
 
     markers=''
