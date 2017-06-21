@@ -12,7 +12,6 @@ r=redis.from_url(os.environ['REDIS_URL'])
 r.flushall()
 link='https://maps.googleapis.com/maps/api/staticmap?markers={}&size=460x460&key=AIzaSyCic4Gp4eox33x5zUB5wMJEOdCr3632PVE'
 
-
 class Drawing(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     title=db.Column(db.Text())
@@ -50,6 +49,7 @@ def home():
             coordinates = root[7].text + ',' + root[8].text
             element= Drawing(title, drawing, coordinates)
             db.session.add(element)
+            db.session.refresh(element)
             r.lpush('drawings',json.dumps(element.as_dict()))
             if r.llen('drawings')>10:
                 r.rpop('drawings')
@@ -70,7 +70,7 @@ def home():
 
     drawings_jsons=r.lrange('drawings',0,-1)
 
-    print('REDIS HIT, Exists in cache?', drawings_jsons)
+    print('REDIS HIT, Exists in cache?', drawings_jsons==True)
     if not drawings_jsons:
         drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
         print('DB HIT')
