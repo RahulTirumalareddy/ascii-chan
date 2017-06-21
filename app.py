@@ -10,7 +10,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db=SQLAlchemy(app)
 r=redis.from_url(os.environ['REDIS_URL'])
 link='https://maps.googleapis.com/maps/api/staticmap?markers={}&size=460x460&key=AIzaSyCic4Gp4eox33x5zUB5wMJEOdCr3632PVE'
-
+r.set('updated', r.time()[0])
 class Drawing(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     title=db.Column(db.Text())
