@@ -60,7 +60,7 @@ def home():
             print("DEL OPERATION, DB HIT")
             jsons=[json.dumps(d.as_dict()) for d in drawings]
             r.delete('drawings')
-            r.lpush('drawings',*jsons)
+            r.rpush('drawings',*jsons)
 
 
         db.session.commit()
