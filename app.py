@@ -78,9 +78,9 @@ def home():
         print('DB HIT')
         r.lpush('drawings',*[json.dumps(d.as_dict()) for d in drawings])
 
-    drawings_json=r.lrange('drawings',0,-1)
-    print("SIZE OF DRAWINGS_JSON:", len(drawings_json))
-    print(drawings_json[0])
+    drawings_jsons=r.lrange('drawings',0,-1)
+    print("SIZE OF DRAWINGS_JSON:", len(drawings_jsons))
+    print(drawings_jsons[0])
     drawings = [json2drawing(drawing_json) for drawing_json in drawings_jsons]
     print("SIZE OF DRAWINGS:",len(drawings))
     print(drawings[0])
