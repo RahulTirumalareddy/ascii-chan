@@ -9,7 +9,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db=SQLAlchemy(app)
 r=redis.from_url(os.environ['REDIS_URL'])
-r.flushall()
 link='https://maps.googleapis.com/maps/api/staticmap?markers={}&size=460x460&key=AIzaSyCic4Gp4eox33x5zUB5wMJEOdCr3632PVE'
 
 class Drawing(db.Model):
@@ -70,7 +69,7 @@ def home():
 
     drawings_jsons=r.lrange('drawings',0,-1)
 
-    print('REDIS HIT, Exists in cache?', drawings_jsons==True)
+    print('REDIS HIT, Cache has stuff in it?', drawings_jsons!=[])
     if not drawings_jsons:
         drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
         print('DB HIT')
