@@ -70,11 +70,11 @@ def home():
 
     drawings_jsons=r.lrange('drawings',0,-1)
 
-    print('REDIS HIT, Exists in cache?', not drawings_jsons)
+    print('REDIS HIT, Exists in cache?', drawings_jsons)
     if not drawings_jsons:
         drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
         print('DB HIT')
-        r.lpush('drawings',*[json.dumps(d.as_dict()) for d in drawings])
+        r.rpush('drawings',*[json.dumps(d.as_dict()) for d in drawings])
 
     drawings_jsons=r.lrange('drawings',0,-1)
     drawings = [json2drawing(drawing_json) for drawing_json in drawings_jsons]
