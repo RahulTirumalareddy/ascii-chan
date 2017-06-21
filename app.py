@@ -96,7 +96,7 @@ def home():
 
 def json2drawing(s):
     d=json.loads(s)
-    return Drawing(d['title'], d['drawing'], d['date'], d['coordinates'])
+    return Drawing(d['title'], d['drawing'], d['coordinates'])
 
 if __name__ == '__main__':
 	port = int(os.environ.get('PORT', 5000))
