@@ -57,6 +57,7 @@ def home():
         if deleted:
             db.session.delete(Drawing.query.filter_by(id=deleted).first())
             drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
+            r.set('updated',r.time()[0])
             print("DEL OPERATION, DB HIT")
             jsons=[json.dumps(d.as_dict()) for d in drawings]
             r.delete('drawings')
@@ -72,6 +73,7 @@ def home():
     print('REDIS HIT, Cache has stuff in it?', drawings_jsons!=[])
     if not drawings_jsons:
         drawings=Drawing.query.order_by(Drawing.date.desc()).limit(10).all()
+        r.set('updated',r.time()[0])
         print('DB HIT')
         r.rpush('drawings',*[json.dumps(d.as_dict()) for d in drawings])
 
@@ -85,7 +87,7 @@ def home():
             else:
                 markers+='|'+coordinates
 
-    return render_template('doc.html',drawings=drawings, map=link.format(markers))
+    return render_template('doc.html',drawings=drawings, map=link.format(markers), time=r.time()[0]-r.get('updated'))
 
 def json2drawing(s):
     d=json.loads(s)

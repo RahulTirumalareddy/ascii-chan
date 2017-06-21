@@ -4,6 +4,11 @@
 <head>
   <link href="https://fonts.googleapis.com/css?family=Spectral" rel="stylesheet">
   <style>
+    #corner_text {
+      position: absolute;
+      top: 15;
+      right: 15;
+    }
     #image {
       float: right;
     }
@@ -26,6 +31,9 @@
 </head>
 
 <body>
+  <div id='corner_text'>
+    updated {{time}} seconds ago
+  </div>
   <div id='image'>
     <img src={{map}} alt="Map">
   </div>
